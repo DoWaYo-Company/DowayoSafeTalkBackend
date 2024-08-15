@@ -1,4 +1,5 @@
 import json
+import re
 
 import numpy as np
 import torch
@@ -33,8 +34,26 @@ def check(request):
                 'verify': 0,
             }
         )
+
+    # def remove_chosung(text):
+    #     res = []
+    #
+    #     for ch in text:
+    #         if 'ㄱ' <= ch <= 'ㅎ':
+    #             continue
+    #         res.append(ch)
+    #
+    #     return ''.join(res)
+
+    def normalize_korean_text(text):
+        # 한글(가-힣)과 공백을 제외한 모든 문자 제거
+        normalized_text = re.sub(r"[^가-힣\s]", "", text)
+        return normalized_text
+
     texts = process.filter_text(text)
     text = ' '.join(texts)
+    text = normalize_korean_text(text)
+    # text = remove_chosung(text)
 
     # print(text)
     logits, predicted_id = deberta_inference.inference(text)
